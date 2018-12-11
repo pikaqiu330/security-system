@@ -13,7 +13,7 @@ public class LogConfig {
 
         @Bean
         public Person logMethod() {
-            LOG.info("==========print log==========");
+            LOG.info("==========print log============");
             return new Person();
         }
 
