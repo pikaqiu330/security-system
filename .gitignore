@@ -1,7 +1,7 @@
 
 .DS_Store
-#/.gitignore
+.gitignore
 .idea/
-#src/main/resources/static/
-#src/main/resources/templates/
 target/
+src/main/resources/static/
+src/main/resources/templates/
