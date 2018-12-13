@@ -12,9 +12,10 @@ public class VoiceServiceImpl implements VoiceService {
     private VoiceLinkC voiceLinkC;
 
     @Override
-    public void checkAnomalyTolinkJni(String txtPath,String voiceDirPath) {
-
+    public void checkAnomalyToLinkJni(String txtPath,String voiceDirPath) {
+        System.out.println("run start");
         voiceLinkC.getVoice(txtPath,voiceDirPath);
-
+        System.out.println("run stop");
     }
+
 }
