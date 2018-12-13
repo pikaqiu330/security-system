@@ -6,14 +6,16 @@ import lombok.ToString;
 
 /**
  * @author lixiao
- * Voice
+ * VoiceJNI
  */
 @Getter
 @Setter
 @ToString
 public class Voice {
 
-    private String voice_id;
+    private Integer anomaly;//1代表异常
 
-    private String url;
+    private float anomalyTimeBegin;//异常开始时间
+
+    private float anomalyTimeEnd;//异常结束时间
 }
