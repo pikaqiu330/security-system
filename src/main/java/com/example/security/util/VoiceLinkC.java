@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class VoiceLinkC {
 
-    //╪сть╤╞л╛©Б
-    static {
+    //Е┼═Х╫╫Е┼╗Ф─│Е╨⌠
+    /*static {
         System.loadLibrary("CMdetectJNI");
-    }
+    }*/
     public native void startVoiceJNI(String txtUrl, String voiceUrl);
 
     public native void closeVoiceJNI();
