@@ -9,11 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     com_example_security_util_VoiceLinkC
- * Method:    getVoice
+ * Method:    startVoiceJNI
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_example_security_util_VoiceLinkC_getVoice
+JNIEXPORT void JNICALL Java_com_example_security_util_VoiceLinkC_startVoiceJNI
   (JNIEnv *, jobject, jstring, jstring);
+
+/*
+ * Class:     com_example_security_util_VoiceLinkC
+ * Method:    closeVoiceJNI
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_example_security_util_VoiceLinkC_closeVoiceJNI
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

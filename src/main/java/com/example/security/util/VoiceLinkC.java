@@ -9,6 +9,8 @@ public class VoiceLinkC {
     static {
         System.loadLibrary("CMdetectJNI");
     }
-    public native void getVoice(String txtUrl, String voiceUrl);
+    public native void startVoiceJNI(String txtUrl, String voiceUrl);
+
+    public native void closeVoiceJNI();
 
 }
