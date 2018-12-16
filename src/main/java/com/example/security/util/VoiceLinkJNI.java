@@ -3,7 +3,7 @@ package com.example.security.util;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VoiceLinkC {
+public class VoiceLinkJNI {
 
     //加载动态库
     /*static {
