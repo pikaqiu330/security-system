@@ -9,8 +9,10 @@ public class VoiceLinkJNI {
     /*static {
         System.loadLibrary("CMdetectJNI");
     }*/
-    public native void startVoiceJNI(String txtUrl, String voiceUrl);
+    //public native void startVoiceJNI(String txtUrl, String voiceUrl);
 
-    public native void closeVoiceJNI();
+    //public native void closeVoiceJNI();
+
+    public native boolean AnomalyDetectionJNI(String audioUrl);
 
 }
