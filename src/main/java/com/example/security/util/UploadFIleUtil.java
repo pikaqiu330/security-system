@@ -144,4 +144,16 @@ public class UploadFIleUtil {
         return flag;
     }
 
+    public ArrayList<String> getFilePathList(String path){
+        File dest = new File(path);
+        File[] listFiles = dest.listFiles();
+        ArrayList<String> filePathList = new ArrayList<>();
+        for (File file:listFiles
+             ) {
+            filePathList.add(file.getAbsolutePath());
+        }
+        System.out.println(filePathList);
+        return filePathList;
+    }
+
 }

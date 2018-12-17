@@ -14,7 +14,7 @@ public class VoiceServiceImpl implements VoiceService {
     @Override
     public void checkAnomalyToLinkJni(String txtPath,String voiceDirPath) {
         System.out.println("run start");
-        voiceLinkJNI.startVoiceJNI(txtPath,voiceDirPath);
+        //voiceLinkJNI.startVoiceJNI(txtPath,voiceDirPath);
         System.out.println("run stop");
     }
 
