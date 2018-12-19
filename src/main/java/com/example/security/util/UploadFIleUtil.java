@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import org.assertj.core.util.Lists;
 
 /**
@@ -44,12 +45,12 @@ public class UploadFIleUtil {
             LOG.info(fileName + "文件开始写入...");
             file.transferTo(dest);// 文件写入
             LOG.info("upload successful");
-            filePathList.add(path);
+            /*filePathList.add(path);
             //每上传4个文件删除前面2个文件
-            if (filePathList.size() == 4){
+            if (filePathList.size() == 10){
                 //文件以满4个，即将删除
                 LOG.info("正在删除文件...");
-                for(int i = 0;i < filePathList.size() - 2;i++){
+                for(int i = 0;i < filePathList.size() - 5;i++){
                     String strIndex = filePathList.get(i);
                     deleteFile(strIndex);
                     arrayList.add(strIndex);
@@ -57,7 +58,7 @@ public class UploadFIleUtil {
                 filePathList.removeAll(arrayList);
                 arrayList.clear();
                 LOG.info("删除文件成功！");
-            }
+            }*/
             return true;
         } catch (IOException e) {
             LOG.error("上传文件失败！");
@@ -144,15 +145,22 @@ public class UploadFIleUtil {
         return flag;
     }
 
+
+    /**
+     * 获取本地音频文件资源名称
+     * @param path 本地资源路径
+     * @return 音频文件名集合
+     */
     public ArrayList<String> getFilePathList(String path){
         File dest = new File(path);
         File[] listFiles = dest.listFiles();
-        ArrayList<String> filePathList = new ArrayList<>();
-        for (File file:listFiles
-             ) {
-            filePathList.add(file.getAbsolutePath());
+        filePathList = new ArrayList<>();
+        if(listFiles!=null){
+            for (File file:listFiles
+            ) {
+                filePathList.add(file.getName());
+            }
         }
-        System.out.println(filePathList);
         return filePathList;
     }
 
