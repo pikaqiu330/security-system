@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.assertj.core.util.Lists;
 
@@ -154,10 +157,23 @@ public class UploadFIleUtil {
     public ArrayList<String> getFilePathList(String path){
         File dest = new File(path);
         File[] listFiles = dest.listFiles();
-        filePathList = new ArrayList<>();
         if(listFiles!=null){
+            Arrays.sort(listFiles, new Comparator<File>() {
+                @Override
+                public int compare(File file, File newFile) {
+                    if (file.lastModified() < newFile.lastModified()) {
+                        return 1;
+                    } else if (file.lastModified() == newFile.lastModified()) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                }
+            });
+            filePathList = new ArrayList<>();
             for (File file:listFiles
             ) {
+
                 filePathList.add(file.getName());
             }
         }

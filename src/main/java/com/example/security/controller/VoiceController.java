@@ -48,7 +48,7 @@ public class VoiceController {
     @RequestMapping("start_remote_wavFile")
     public Map<String,Object> start_remote_wavFile(){
         Map<String,Object> map = new HashMap<>();
-        map.put("filePathList",uploadFIleUtil.getFilePathList(Constant.FILEPATH_REMOTE));
+        map.put("filePathList",uploadFIleUtil.getFilePathList(Constant.FILEPATH_LOCAL));
         return map;
     }
 

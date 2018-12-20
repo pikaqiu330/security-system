@@ -11,7 +11,7 @@ import java.io.File;
 public class Task {
     private static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
-    @Scheduled(cron="0/30 * * * * ?")   //每5秒执行一次
+    /*@Scheduled(cron="0 0/3 * * * ?")   //每5秒执行一次
     public void deleteVoiceLocal(){
         LOG.info("开始删除本端音频文件...");
         deleteVoice(Constant.FILEPATH_LOCAL);
@@ -29,5 +29,5 @@ public class Task {
                 files[i].delete();
             }
         }
-    }
+    }*/
 }
