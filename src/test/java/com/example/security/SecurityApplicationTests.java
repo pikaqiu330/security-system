@@ -1,6 +1,6 @@
 package com.example.security;
 
-import com.example.security.service.VoiceService;
+import com.example.security.util.VoiceLinkJNI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @EnableAutoConfiguration
 public class SecurityApplicationTests {
-
     @Autowired
-    private VoiceService voiceService;
+    private  VoiceLinkJNI voiceLinkJNI;
 
     @Test
     public void contextLoads() {
@@ -26,9 +25,9 @@ public class SecurityApplicationTests {
      */
     @Test
     public void testGetVoice(){
-        String txtUrl = "E:/wavfile/detect.txt";
-        String voiceDirPath = "D:/XAMPP/htdocs/web_Record_func/upload/new_wav";
-        voiceService.checkAnomalyToLinkJni(txtUrl,voiceDirPath);
+        String url = "E:/voice/VoiceRemote/A_3.raw";
+        boolean b = voiceLinkJNI.AnomalyDetectionJNI(url);
+        System.out.println(b);
     }
 
 }

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 public class VoiceLinkJNI {
 
     //加载动态库
-    /*static {
-        System.loadLibrary("CMdetectJNI");
-    }*/
+    static {
+        System.loadLibrary("CMboomJNI");
+    }
     //public native void startVoiceJNI(String txtUrl, String voiceUrl);
 
     //public native void closeVoiceJNI();

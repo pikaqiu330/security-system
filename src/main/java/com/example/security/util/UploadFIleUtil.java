@@ -48,20 +48,6 @@ public class UploadFIleUtil {
             LOG.info(fileName + "文件开始写入...");
             file.transferTo(dest);// 文件写入
             LOG.info("upload successful");
-            /*filePathList.add(path);
-            //每上传4个文件删除前面2个文件
-            if (filePathList.size() == 10){
-                //文件以满4个，即将删除
-                LOG.info("正在删除文件...");
-                for(int i = 0;i < filePathList.size() - 5;i++){
-                    String strIndex = filePathList.get(i);
-                    deleteFile(strIndex);
-                    arrayList.add(strIndex);
-                }
-                filePathList.removeAll(arrayList);
-                arrayList.clear();
-                LOG.info("删除文件成功！");
-            }*/
             return true;
         } catch (IOException e) {
             LOG.error("上传文件失败！");
@@ -173,7 +159,6 @@ public class UploadFIleUtil {
             filePathList = new ArrayList<>();
             for (File file:listFiles
             ) {
-
                 filePathList.add(file.getName());
             }
         }
