@@ -7,7 +7,7 @@ public class VoiceLinkJNI {
 
     //加载动态库
     static {
-        System.loadLibrary("CMboomJNI");
+        System.loadLibrary("Chinamobile_NoiseDetect");
     }
     //public native void startVoiceJNI(String txtUrl, String voiceUrl);
 

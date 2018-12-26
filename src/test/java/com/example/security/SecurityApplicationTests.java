@@ -17,7 +17,8 @@ public class SecurityApplicationTests {
 
     @Test
     public void contextLoads() {
-
+        boolean b = voiceLinkJNI.AnomalyDetectionJNI("E:/voice/voice_node1/A_2.wav");
+        System.out.println(b);
     }
 
     /**
@@ -25,9 +26,12 @@ public class SecurityApplicationTests {
      */
     @Test
     public void testGetVoice(){
-        String url = "E:/voice/VoiceRemote/A_3.raw";
-        boolean b = voiceLinkJNI.AnomalyDetectionJNI(url);
-        System.out.println(b);
+       String a = "123";
+       if(true){
+           a = "456";
+           System.out.println(a);
+       }
+       System.out.println(a);
     }
 
 }

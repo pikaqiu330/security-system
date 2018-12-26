@@ -1,17 +1,18 @@
 package com.example.security.util;
 
+import com.example.security.domain.Media;
+import com.example.security.service.MediaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-
-import org.assertj.core.util.Lists;
+import java.util.List;
 
 /**
  * @author lixiao
@@ -20,32 +21,32 @@ import org.assertj.core.util.Lists;
 @Component
 public class UploadFIleUtil {
 
+    @Autowired
+    private VoiceLinkJNI voiceLinkJNI;
+
+    @Autowired
+    private MediaService mediaService;
+
     private static final Logger LOG = LoggerFactory.getLogger(UploadFIleUtil.class);
-
-    private ArrayList<String> filePathList = new ArrayList<>();
-
-    private ArrayList<String> arrayList = Lists.newArrayList();
-
 
     /**
      * 上传音频文件
      * @param file 音频文件
-     * @param fileName 音频文件名称
+     * @param filePath 音频文件路径
      * @return true or false
      */
-    public synchronized boolean uploadFile(String filePath,MultipartFile file,String fileName){
+    public boolean uploadFile(MultipartFile file,String filePath){
         try {
             if(file.isEmpty()){
                 return false;
             }
-            String path = filePath + fileName;
-            File dest = new File(path);
+            File dest = new File(filePath);
             // 检测是否存在目录
             if (!dest.getParentFile().exists()) {
                 LOG.info("新建文件夹...");
                 dest.getParentFile().mkdirs();// 新建文件夹
             }
-            LOG.info(fileName + "文件开始写入...");
+            LOG.info(dest.getName() + "文件开始写入...");
             file.transferTo(dest);// 文件写入
             LOG.info("upload successful");
             return true;
@@ -140,7 +141,8 @@ public class UploadFIleUtil {
      * @param path 本地资源路径
      * @return 音频文件名集合
      */
-    public ArrayList<String> getFilePathList(String path){
+    public List<Media> getFilePathList(String path){
+        List<Media> mediaList = null;
         File dest = new File(path);
         File[] listFiles = dest.listFiles();
         if(listFiles!=null){
@@ -148,21 +150,32 @@ public class UploadFIleUtil {
                 @Override
                 public int compare(File file, File newFile) {
                     if (file.lastModified() < newFile.lastModified()) {
-                        return 1;
+                        return -1;
                     } else if (file.lastModified() == newFile.lastModified()) {
                         return 0;
                     } else {
-                        return -1;
+                        return 1;
                     }
                 }
             });
-            filePathList = new ArrayList<>();
+            if (listFiles.length > 6){
+                File[] files = new File[6];
+                int num = 0;
+                for (int i = listFiles.length - 6;i < listFiles.length; i++){
+                    files[num++] = listFiles[i];
+                }
+                listFiles = files;
+            }
+            mediaList = new ArrayList<>();
             for (File file:listFiles
             ) {
-                filePathList.add(file.getName());
+                boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(path + file.getName());
+                Media detection = mediaService.Detection(b_jni);
+                detection.setPath(file.getAbsolutePath());
+                mediaList.add(detection);
             }
         }
-        return filePathList;
+        return mediaList;
     }
 
 }
