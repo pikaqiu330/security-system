@@ -1,15 +1,17 @@
 package com.example.security.domain;
 
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author lixiao
  * entity
  */
 
 public class Media {
-    private String name;
 
-    //private String ip;//ip地址
+    private static String ip;
 
     private String path;//音频路径
 
@@ -19,32 +21,58 @@ public class Media {
 
     private Integer refresh;//刷新标识：1刷新、0不刷新
 
-    public static String voicePath_node1 = "E:/voice/voice_node1/";//音频文件路径：node1
+    public  String voicePath_node1 = "E:/voice/voice_node1/";//音频文件路径：node1
 
-    public static String voicePath_node2 = "E:/voice/voice_node2/";//音频文件路径：node2
+    public  String voicePath_node2 = "E:/voice/voice_node2/";//音频文件路径：node2
 
-    public static String voicePath_raw1 = "E:/voice/voice_raw1/";//raw1音频文件路径
+    public  String voicePath_raw1 = "E:/voice/voice_raw1/";//raw1音频文件路径
 
-    public static String voicePath_raw2 = "E:/voice/voice_raw2/";//raw2音频文件路径
+    public  String voicePath_raw2 = "E:/voice/voice_raw2/";//raw2音频文件路径
 
     //public static String videoPath;//视频文件路径
 
-    public static Integer count=0;//若30个文件之中有多个异常则只返回一次
+    public Integer count=0;//若30个文件之中有多个异常则只返回一次
 
-    /*public String getIp() {
-        return ip;
+    public static Map<String,Media> map = new ConcurrentHashMap<>();
+
+    public Integer getCount() {
+        return count;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }*/
-
-    public String getName() {
-        return name;
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getVoicePath_node1() {
+        return voicePath_node1;
+    }
+
+    public void setVoicePath_node1(String voicePath_node1) {
+        this.voicePath_node1 = voicePath_node1;
+    }
+
+    public String getVoicePath_node2() {
+        return voicePath_node2;
+    }
+
+    public void setVoicePath_node2(String voicePath_node2) {
+        this.voicePath_node2 = voicePath_node2;
+    }
+
+    public String getVoicePath_raw1() {
+        return voicePath_raw1;
+    }
+
+    public void setVoicePath_raw1(String voicePath_raw1) {
+        this.voicePath_raw1 = voicePath_raw1;
+    }
+
+    public String getVoicePath_raw2() {
+        return voicePath_raw2;
+    }
+
+    public void setVoicePath_raw2(String voicePath_raw2) {
+        this.voicePath_raw2 = voicePath_raw2;
     }
 
     public Integer getType() {
@@ -82,8 +110,7 @@ public class Media {
     @Override
     public String toString() {
         return "Media{" +
-                "name='" + name + '\'' +
-                ", path='" + path + '\'' +
+                "path='" + path + '\'' +
                 ", type=" + type +
                 ", status=" + status +
                 ", refresh=" + refresh +

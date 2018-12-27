@@ -4,10 +4,15 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author lixiao
+ * 自定义工具类
+ */
 @Component
 public class LocalUtil {
     /**
      * 获取真实IP
+     *
      * @param request 请求体
      * @return 真实IP
      */

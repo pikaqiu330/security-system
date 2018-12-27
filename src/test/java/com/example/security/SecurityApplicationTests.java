@@ -15,23 +15,14 @@ public class SecurityApplicationTests {
     @Autowired
     private  VoiceLinkJNI voiceLinkJNI;
 
-    @Test
-    public void contextLoads() {
-        boolean b = voiceLinkJNI.AnomalyDetectionJNI("E:/voice/voice_node1/A_2.wav");
-        System.out.println(b);
-    }
-
     /**
      * JNI测试
      */
     @Test
-    public void testGetVoice(){
-       String a = "123";
-       if(true){
-           a = "456";
-           System.out.println(a);
-       }
-       System.out.println(a);
+    public void contextLoads() {
+
+        boolean b = voiceLinkJNI.AnomalyDetectionJNI("E:/voice/voice_node1/A_2.wav");
+        System.out.println(b);
     }
 
 }

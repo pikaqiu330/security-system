@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author lixiao
+ * Task任务类
+ */
 @Component
 public class Task {
     private static final Logger LOG = LoggerFactory.getLogger(Task.class);
@@ -13,14 +17,12 @@ public class Task {
     @Autowired
     private UploadFIleUtil uploadFIleUtil;
 
-    @Scheduled(cron="0 0/10 * * * ?")   //每5秒执行一次
+    @Scheduled(cron="0 0/5 * * * ?")   //每10分钟执行一次
     public void deleteVoiceLocal(){
-        /*LOG.info("开始删除本端音频文件...");
+        LOG.info("开始清理服务器音频文件...");
         uploadFIleUtil.deleteDirectory(Media.voicePath_node1);
-        LOG.info("删除本端音频文件完成！");
-        LOG.info("开始删除远端音频文件...");
         uploadFIleUtil.deleteDirectory(Media.voicePath_node2);
-        LOG.info("删除远端音频文件完成！");*/
+        LOG.info("清理服务器音频文件完成！");
     }
 
 }

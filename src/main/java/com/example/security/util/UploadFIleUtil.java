@@ -99,7 +99,10 @@ public class UploadFIleUtil {
         boolean flag = true;
         //删除文件夹下的所有文件(包括子目录)
         File[] files = dirFile.listFiles();
-        for (int i = 0; i < files.length; i++) {
+        if(files == null || files.length < 7){
+            return false;
+        }
+        for (int i = 0; i < files.length-6; i++) {
             //删除子文件
             if (files[i].isFile()) {
                 flag = deleteFile(files[i].getAbsolutePath());
@@ -112,11 +115,7 @@ public class UploadFIleUtil {
         }
         if (!flag) return false;
         //删除当前目录
-        if (dirFile.delete()) {
-            return true;
-        } else {
-            return false;
-        }
+        return dirFile.delete();
     }
 
     /**
@@ -171,7 +170,7 @@ public class UploadFIleUtil {
             ) {
                 boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(path + file.getName());
                 Media detection = mediaService.Detection(b_jni);
-                detection.setPath(file.getAbsolutePath());
+                detection.setPath(file.getName());
                 mediaList.add(detection);
             }
         }

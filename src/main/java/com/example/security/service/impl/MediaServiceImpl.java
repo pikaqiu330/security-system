@@ -26,7 +26,7 @@ public class MediaServiceImpl implements MediaService {
             media.setRefresh(0);
             if(!isRefresh){
                 Media.count++;
-                if(Media.count == 2){
+                if(Media.count == 5){                //连续5个false刷新Refresh
                     Media.count = 0;
                     media.setRefresh(1);
                     isRefresh = true;

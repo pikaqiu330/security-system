@@ -8,11 +8,8 @@ import com.example.security.util.VoiceLinkJNI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,9 +36,21 @@ public class MediaController {
      * @return
      */
     @RequestMapping(value = "/start_uploaded_wavFile",method = RequestMethod.POST)
-    public Media start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file,@RequestParam("name") String name){
+    public Media start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file,@RequestParam("name") String name,@RequestParam("key") String key){
+        Media media = Media.map.get(key);
+        if(media == null){
+            media = new Media();
+            if(media.getVoicePath_raw1() == null){
+                if(Media.map.size() == 1){
+                    media.setVoicePath_raw1("E:/voice/voice_raw2/");
+                }else {
+                    media.setVoicePath_raw1("E:/voice/voice_raw1/");
+                }
+            }
+            media.setCount(0);
+            Media.map.put(key,media);
+        }
         String ip = LocalUtil.getRealIp(request);
-        Media media = new Media();
         boolean b_jni = false;
         Map<String,String> map = new HashMap<>();
         if(ip.equals("127.0.0.1")){             //根据ip区分上传文件夹路径
@@ -73,11 +82,11 @@ public class MediaController {
      * @return map
      */
     @RequestMapping("start_remote_wavFile")
-    public List<Media> start_remote_wavFile(HttpServletRequest request, ModelAndView model){
+    public List<Media> start_remote_wavFile(HttpServletRequest request){
         String path;
         String ip = LocalUtil.getRealIp(request);
         if(ip.equals("127.0.0.1")){
-            path = Media.voicePath_node1;
+            path = Media.voicePath_node2;
         }else{
             path = Media.voicePath_node1;
         }
