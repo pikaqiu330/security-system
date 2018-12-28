@@ -20,8 +20,10 @@ public class Task {
     @Scheduled(cron="0 0/5 * * * ?")   //每10分钟执行一次
     public void deleteVoiceLocal(){
         LOG.info("开始清理服务器音频文件...");
-        uploadFIleUtil.deleteDirectory(Media.voicePath_node1);
-        uploadFIleUtil.deleteDirectory(Media.voicePath_node2);
+        uploadFIleUtil.deleteDirectory("E:/voice/voice_node1/");
+        uploadFIleUtil.deleteDirectory("E:/voice/voice_node2/");
+        uploadFIleUtil.deleteDirectory("E:/voice/voice_raw1/");
+        uploadFIleUtil.deleteDirectory("E:/voice/voice_raw2/");
         LOG.info("清理服务器音频文件完成！");
     }
 

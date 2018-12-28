@@ -7,31 +7,38 @@ import org.springframework.stereotype.Service;
 @Service
 public class MediaServiceImpl implements MediaService {
 
-    private boolean isRefresh = true;
-
     @Override
-    public Media Detection(Boolean b_jni) {
-        Media media = new Media();
+    public Media Detection(Boolean b_jni,Media media) {
         if (b_jni){
+            if (media.getIsAbnormity() == 1){
+                media.setCount(0);
+                media.setRefresh(0);
+            }else {
+                media.setIsAbnormity(1);
+                media.setRefresh(1);
+            }
+            /*if (media.getCount() == 0)
+                media.setRefresh(1);
+            else
+                media.setRefresh(0);*/
+            media.setIsAbnormity(1);    //出现异常音
             media.setStatus(1);
             media.setType(0);
-            media.setRefresh(0);
-            if (isRefresh){
-                media.setRefresh(1);
-                isRefresh = false;
-            }
         }else {
+            if (media.getIsAbnormity() == 1){   //前面出现异常音
+                media.setCount(media.getCount() + 1);
+                if (media.getCount() == 5){     //连续出现5个正常音刷回正常状态
+                    media.setRefresh(1);
+                    media.setIsAbnormity(0);
+                    media.setCount(0);  //累计正常音数量归零
+                }else {
+                    media.setRefresh(0);
+                }
+            }else{
+                media.setRefresh(0);
+            }
             media.setStatus(0);
             media.setType(0);
-            media.setRefresh(0);
-            if(!isRefresh){
-                Media.count++;
-                if(Media.count == 5){                //连续5个false刷新Refresh
-                    Media.count = 0;
-                    media.setRefresh(1);
-                    isRefresh = true;
-                }
-            }
         }
         return media;
     }

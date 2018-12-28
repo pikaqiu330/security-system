@@ -2,7 +2,6 @@ package com.example.security.controller;
 
 import com.example.security.domain.Media;
 import com.example.security.service.MediaService;
-import com.example.security.util.LocalUtil;
 import com.example.security.util.UploadFIleUtil;
 import com.example.security.util.VoiceLinkJNI;
 import org.slf4j.Logger;
@@ -12,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -32,69 +29,63 @@ public class MediaController {
 
     /**
      * 实时收音上传并且检测
+     *
      * @param file 媒体文件
      * @return
      */
-    @RequestMapping(value = "/start_uploaded_wavFile",method = RequestMethod.POST)
-    public Media start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file,@RequestParam("name") String name,@RequestParam("key") String key){
+    @RequestMapping(value = "/start_uploaded_wavFile", method = RequestMethod.POST)
+    public Media start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file, @RequestParam("name") String name, @RequestParam("clientId") String key) {
+        System.out.println(request.getRemoteAddr());
+        System.out.println(request.getLocalAddr());
         Media media = Media.map.get(key);
-        if(media == null){
+        if (media == null) {
             media = new Media();
-            if(media.getVoicePath_raw1() == null){
-                if(Media.map.size() == 1){
-                    media.setVoicePath_raw1("E:/voice/voice_raw2/");
-                }else {
-                    media.setVoicePath_raw1("E:/voice/voice_raw1/");
-                }
+            if (Media.map.size() > 0) {
+                media.setVoicePath_raw1("E:/voice/voice_raw1/");
+                media.setVoicePath_node1("E:/voice/voice_node1/");
+            } else {
+                media.setVoicePath_raw1("E:/voice/voice_raw2/");
+                media.setVoicePath_node1("E:/voice/voice_node2/");
             }
             media.setCount(0);
-            Media.map.put(key,media);
+            Media.map.put(key, media);
         }
-        String ip = LocalUtil.getRealIp(request);
         boolean b_jni = false;
-        Map<String,String> map = new HashMap<>();
-        if(ip.equals("127.0.0.1")){             //根据ip区分上传文件夹路径
-            map.put("rawPath",Media.voicePath_raw1);
-            map.put("voicePath",Media.voicePath_node1);
-        } else{
-            map.put("rawPath",Media.voicePath_raw2);
-            map.put("voicePath",Media.voicePath_node2);
-            }
-            String rawName = map.get("rawPath")+name;
-            String voicePath = map.get("voicePath")+name;
-        if (uploadFIleUtil.uploadFile(file, rawName + ".raw")){
-            String[] cmd = {"cmd","/C","ffmpeg -y -i "+rawName+".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le "+voicePath+".wav"};
+        String rawName = media.getVoicePath_raw1() + name;
+        String voicePath = media.getVoicePath_node1() + name;
+        if (uploadFIleUtil.uploadFile(file, rawName + ".raw")) {
+            String[] cmd = {"cmd", "/C", "ffmpeg -y -i " + rawName + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + voicePath + ".wav"};
             try {
                 Process process = Runtime.getRuntime().exec(cmd);
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-            b_jni = voiceLinkJNI.AnomalyDetectionJNI(voicePath+".wav");
+            b_jni = voiceLinkJNI.AnomalyDetectionJNI(voicePath + ".wav");
             System.out.println(b_jni);
         }
-        return mediaService.Detection(b_jni);
+        return mediaService.Detection(b_jni,media);
     }
 
 
     /**
      * 获取远端音频资源文件名
+     *
      * @return map
      */
     @RequestMapping("start_remote_wavFile")
-    public List<Media> start_remote_wavFile(HttpServletRequest request){
-        String path;
-        String ip = LocalUtil.getRealIp(request);
-        if(ip.equals("127.0.0.1")){
-            path = Media.voicePath_node2;
-        }else{
-            path = Media.voicePath_node1;
+    public List<Media> start_remote_wavFile(@RequestParam("clientId") String key) {
+        Media media = Media.map.get(key);
+        List<Media> filePathList = uploadFIleUtil.getFilePathList(media.getVoicePath_node1(), media);
+        for (Media media1:filePathList
+             ) {
+            System.out.println(media.getPath());
         }
-        return uploadFIleUtil.getFilePathList(path);
+        return filePathList;
     }
 
     @RequestMapping("/")
-    public boolean hello(){
+    public boolean hello() {
 
         return true;
     }

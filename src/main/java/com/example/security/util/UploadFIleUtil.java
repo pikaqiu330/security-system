@@ -140,7 +140,7 @@ public class UploadFIleUtil {
      * @param path 本地资源路径
      * @return 音频文件名集合
      */
-    public List<Media> getFilePathList(String path){
+    public List<Media> getFilePathList(String path,Media media){
         List<Media> mediaList = null;
         File dest = new File(path);
         File[] listFiles = dest.listFiles();
@@ -169,7 +169,7 @@ public class UploadFIleUtil {
             for (File file:listFiles
             ) {
                 boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(path + file.getName());
-                Media detection = mediaService.Detection(b_jni);
+                Media detection = mediaService.Detection(b_jni,media);
                 detection.setPath(file.getName());
                 mediaList.add(detection);
             }

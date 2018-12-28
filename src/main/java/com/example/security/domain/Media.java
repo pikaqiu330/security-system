@@ -11,7 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Media {
 
-    private static String ip;
+
+
+    private int isAbnormity = 0;//是否累计正常音标识：1累计/0不累计
 
     private String path;//音频路径
 
@@ -21,25 +23,33 @@ public class Media {
 
     private Integer refresh;//刷新标识：1刷新、0不刷新
 
-    public  String voicePath_node1 = "E:/voice/voice_node1/";//音频文件路径：node1
+    public  String voicePath_node1;//音频文件路径：node1
 
-    public  String voicePath_node2 = "E:/voice/voice_node2/";//音频文件路径：node2
+    public  String voicePath_node2;//音频文件路径：node2
 
-    public  String voicePath_raw1 = "E:/voice/voice_raw1/";//raw1音频文件路径
+    public  String voicePath_raw1;//raw1音频文件路径
 
-    public  String voicePath_raw2 = "E:/voice/voice_raw2/";//raw2音频文件路径
+    public  String voicePath_raw2;//raw2音频文件路径
 
     //public static String videoPath;//视频文件路径
 
-    public Integer count=0;//若30个文件之中有多个异常则只返回一次
+    public int count=0;//若30个文件之中有多个异常则只返回一次
 
     public static Map<String,Media> map = new ConcurrentHashMap<>();
 
-    public Integer getCount() {
+    public int getIsAbnormity() {
+        return isAbnormity;
+    }
+
+    public void setIsAbnormity(int isAbnormity) {
+        this.isAbnormity = isAbnormity;
+    }
+
+    public int getCount() {
         return count;
     }
 
-    public void setCount(Integer count) {
+    public void setCount(int count) {
         this.count = count;
     }
 

@@ -9,5 +9,5 @@ public interface MediaService {
      * @param b_jni 检测是否异常
      * @return 一个音频实例
      */
-    Media Detection(Boolean b_jni);
+    Media Detection(Boolean b_jni,Media media);
 }
