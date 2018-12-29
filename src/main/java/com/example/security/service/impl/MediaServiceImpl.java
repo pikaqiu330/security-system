@@ -1,6 +1,5 @@
 package com.example.security.service.impl;
-
-import com.example.security.domain.Media;
+import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import org.springframework.stereotype.Service;
 
@@ -8,38 +7,32 @@ import org.springframework.stereotype.Service;
 public class MediaServiceImpl implements MediaService {
 
     @Override
-    public Media Detection(Boolean b_jni,Media media) {
+    public Voice Detection(Boolean b_jni, Voice voice) {
         if (b_jni){
-            if (media.getIsAbnormity() == 1){
-                media.setCount(0);
-                media.setRefresh(0);
+            if (voice.getIsAnomaly() == 1){
+                voice.setCount(0);
+                voice.setRefresh(0);
             }else {
-                media.setIsAbnormity(1);
-                media.setRefresh(1);
+                voice.setIsAnomaly(1);
+                voice.setRefresh(1);
             }
-            /*if (media.getCount() == 0)
-                media.setRefresh(1);
-            else
-                media.setRefresh(0);*/
-            media.setIsAbnormity(1);    //出现异常音
-            media.setStatus(1);
-            media.setType(0);
+            voice.setIsAnomaly(1);    //出现异常音
+            voice.setStatus(1);
         }else {
-            if (media.getIsAbnormity() == 1){   //前面出现异常音
-                media.setCount(media.getCount() + 1);
-                if (media.getCount() == 5){     //连续出现5个正常音刷回正常状态
-                    media.setRefresh(1);
-                    media.setIsAbnormity(0);
-                    media.setCount(0);  //累计正常音数量归零
+            if (voice.getIsAnomaly() == 1){   //前面出现异常音
+                voice.setCount(voice.getCount() + 1);
+                if (voice.getCount() == 5){     //连续出现5个正常音刷回正常状态
+                    voice.setRefresh(1);
+                    voice.setIsAnomaly(0);
+                    voice.setCount(0);  //累计正常音数量归零
                 }else {
-                    media.setRefresh(0);
+                    voice.setRefresh(0);
                 }
             }else{
-                media.setRefresh(0);
+                voice.setRefresh(0);
             }
-            media.setStatus(0);
-            media.setType(0);
+            voice.setStatus(0);
         }
-        return media;
+        return voice;
     }
 }

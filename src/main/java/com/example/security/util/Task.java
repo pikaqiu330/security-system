@@ -1,4 +1,5 @@
 package com.example.security.util;
+import com.example.security.config.LoadUserBean;
 import com.example.security.domain.Media;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,12 @@ public class Task {
     @Scheduled(cron="0 0/5 * * * ?")   //每10分钟执行一次
     public void deleteVoiceLocal(){
         LOG.info("开始清理服务器音频文件...");
-        uploadFIleUtil.deleteDirectory("E:/voice/voice_node1/");
-        uploadFIleUtil.deleteDirectory("E:/voice/voice_node2/");
-        uploadFIleUtil.deleteDirectory("E:/voice/voice_raw1/");
-        uploadFIleUtil.deleteDirectory("E:/voice/voice_raw2/");
+        for (String in : LoadUserBean.map.keySet()) {
+             //map.keySet()返回的是所有key的值
+            Media media = LoadUserBean.map.get(in);//得到每个key多对用value的值
+            uploadFIleUtil.deleteDirectory(media.getVoice().getRawPath());
+            uploadFIleUtil.deleteDirectory(media.getVoice().getWavPath());
+         }
         LOG.info("清理服务器音频文件完成！");
     }
 

@@ -1,6 +1,7 @@
 package com.example.security.util;
 
 import com.example.security.domain.Media;
+import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class UploadFIleUtil {
      * @param filePath 音频文件路径
      * @return true or false
      */
-    public boolean uploadFile(MultipartFile file,String filePath){
+    public boolean uploadFile(MultipartFile file,String filePath,String wavPath){
         try {
             if(file.isEmpty()){
                 return false;
@@ -44,6 +45,8 @@ public class UploadFIleUtil {
             // 检测是否存在目录
             if (!dest.getParentFile().exists()) {
                 LOG.info("新建文件夹...");
+                File wavFile = new File(wavPath);
+                wavFile.mkdirs();
                 dest.getParentFile().mkdirs();// 新建文件夹
             }
             LOG.info(dest.getName() + "文件开始写入...");
@@ -140,8 +143,8 @@ public class UploadFIleUtil {
      * @param path 本地资源路径
      * @return 音频文件名集合
      */
-    public List<Media> getFilePathList(String path,Media media){
-        List<Media> mediaList = null;
+    public List<Voice> getVoiceList(String path, Voice mediaVoice){
+        List<Voice> voiceList = null;
         File dest = new File(path);
         File[] listFiles = dest.listFiles();
         if(listFiles!=null){
@@ -165,16 +168,20 @@ public class UploadFIleUtil {
                 }
                 listFiles = files;
             }
-            mediaList = new ArrayList<>();
+            voiceList = new ArrayList<>();
+            Voice voiceInfo;
             for (File file:listFiles
             ) {
+                voiceInfo = new Voice();
                 boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(path + file.getName());
-                Media detection = mediaService.Detection(b_jni,media);
-                detection.setPath(file.getName());
-                mediaList.add(detection);
+                Voice voice = mediaService.Detection(b_jni,mediaVoice);
+                voiceInfo.setName(file.getName());
+                voiceInfo.setStatus(voice.getStatus());
+                voiceInfo.setRefresh(voice.getRefresh());
+                voiceList.add(voiceInfo);
             }
         }
-        return mediaList;
+        return voiceList;
     }
 
 }

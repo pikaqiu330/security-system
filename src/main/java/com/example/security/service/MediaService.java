@@ -1,6 +1,5 @@
 package com.example.security.service;
-
-import com.example.security.domain.Media;
+import com.example.security.domain.Voice;
 
 public interface MediaService {
 
@@ -9,5 +8,5 @@ public interface MediaService {
      * @param b_jni 检测是否异常
      * @return 一个音频实例
      */
-    Media Detection(Boolean b_jni,Media media);
+    Voice Detection(Boolean b_jni, Voice voice);
 }

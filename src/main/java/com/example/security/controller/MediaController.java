@@ -1,7 +1,10 @@
 package com.example.security.controller;
 
+import com.example.security.config.LoadUserBean;
 import com.example.security.domain.Media;
+import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
+import com.example.security.util.LocalUtil;
 import com.example.security.util.UploadFIleUtil;
 import com.example.security.util.VoiceLinkJNI;
 import org.slf4j.Logger;
@@ -34,37 +37,29 @@ public class MediaController {
      * @return
      */
     @RequestMapping(value = "/start_uploaded_wavFile", method = RequestMethod.POST)
-    public Media start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file, @RequestParam("name") String name, @RequestParam("clientId") String key) {
-        System.out.println(request.getRemoteAddr());
-        System.out.println(request.getLocalAddr());
-        Media media = Media.map.get(key);
-        if (media == null) {
-            media = new Media();
-            if (Media.map.size() > 0) {
-                media.setVoicePath_raw1("E:/voice/voice_raw1/");
-                media.setVoicePath_node1("E:/voice/voice_node1/");
-            } else {
-                media.setVoicePath_raw1("E:/voice/voice_raw2/");
-                media.setVoicePath_node1("E:/voice/voice_node2/");
-            }
-            media.setCount(0);
-            Media.map.put(key, media);
+    public Voice start_uploaded_wavFile(HttpServletRequest request,@RequestParam(value = "file") MultipartFile file, @RequestParam("name") String name) {
+        String ip = LocalUtil.getRealIp(request);
+        Media media = LoadUserBean.map.get(ip);
+        Voice mediaVoice = media.getVoice();
+        if(mediaVoice.getNvms() == 0){
+            mediaVoice.setNvms(1);
+            mediaVoice.setCount(0);
         }
-        boolean b_jni = false;
-        String rawName = media.getVoicePath_raw1() + name;
-        String voicePath = media.getVoicePath_node1() + name;
-        if (uploadFIleUtil.uploadFile(file, rawName + ".raw")) {
-            String[] cmd = {"cmd", "/C", "ffmpeg -y -i " + rawName + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + voicePath + ".wav"};
+        String rawPath = mediaVoice.getRawPath() + name;
+        String wavPath = mediaVoice.getWavPath() + name;
+        if (uploadFIleUtil.uploadFile(file, rawPath + ".raw",mediaVoice.getWavPath())) {
+            String[] cmd = {"cmd", "/C", "ffmpeg -y -i " + rawPath + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + wavPath + ".wav"};
             try {
                 Process process = Runtime.getRuntime().exec(cmd);
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-            b_jni = voiceLinkJNI.AnomalyDetectionJNI(voicePath + ".wav");
-            System.out.println(b_jni);
         }
-        return mediaService.Detection(b_jni,media);
+        boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(wavPath + ".wav");
+        System.out.println(b_jni);
+        mediaVoice.setName(name);
+        return mediaService.Detection(b_jni,mediaVoice);
     }
 
 
@@ -74,14 +69,27 @@ public class MediaController {
      * @return map
      */
     @RequestMapping("start_remote_wavFile")
-    public List<Media> start_remote_wavFile(@RequestParam("clientId") String key) {
-        Media media = Media.map.get(key);
-        List<Media> filePathList = uploadFIleUtil.getFilePathList(media.getVoicePath_node1(), media);
-        for (Media media1:filePathList
-             ) {
-            System.out.println(media.getPath());
+    public List<Voice> start_remote_wavFile(HttpServletRequest request) {
+        String ip = LocalUtil.getRealIp(request);
+        Media media = LoadUserBean.map.get(ip);
+        String remotePath = null;
+        for (String in : LoadUserBean.map.keySet()) {
+             //map.keySet()返回的是所有key的值
+            if(!in.equals(ip)){
+                remotePath = LoadUserBean.map.get(in).getVoice().getWavPath();
+            }
+         }
+        Voice mediaVoice = media.getVoice();
+        if(mediaVoice.getNvms() == 1){
+            mediaVoice.setNvms(0);
+            mediaVoice.setCount(0);
         }
-        return filePathList;
+        List<Voice> voiceList = uploadFIleUtil.getVoiceList(remotePath,mediaVoice);
+        for (Voice voice:voiceList
+             ) {
+            System.out.println(voice.getName());
+        }
+        return voiceList;
     }
 
     @RequestMapping("/")
