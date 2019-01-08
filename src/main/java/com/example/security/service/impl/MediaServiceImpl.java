@@ -1,14 +1,23 @@
 package com.example.security.service.impl;
+import com.alibaba.dubbo.common.utils.IOUtils;
+import com.example.security.domain.Video;
 import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
+import com.example.security.util.UploadFIleUtil;
+import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Service
 public class MediaServiceImpl implements MediaService {
+    @Autowired
+    private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
 
     @Override
     public Voice Detection(Boolean b_jni, Voice voice) {
@@ -41,65 +50,45 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void clearProcess(String[] command) {
+    public Video ReadAsChars(HttpServletRequest request){
+        BufferedReader reader;
+        String body = null;
         try {
-            Process process = Runtime.getRuntime().exec(command);
-            new Thread(() -> {
-                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line = null;
-                try
-                {
-                    while((line = in.readLine()) != null)
-                    {
-                        System.out.println("output: " + line);
-                    }
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-                finally
-                {
-                    try
-                    {
-                        in.close();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            new Thread(() -> {
-                BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                String line = null;
-
-                try
-                {
-                    while((line = err.readLine()) != null)
-                    {
-                        System.out.println("err: " + line);
-                    }
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-                finally
-                {
-                    try
-                    {
-                        err.close();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            process.waitFor();
-        } catch (IOException | InterruptedException e) {
+            reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
+            body = IOUtils.read(reader);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        Video video = null;
+        if(body!=null){
+            video = new Video();
+            JSONObject object = JSONObject.fromObject(body);
+            video.setThreshold(object.getInt("threshold"));
+            video.setCurrentNumber(object.getInt("currentNumber"));
+            if(object.getString("status").equals("warning"))
+                video.setStatus(1);
+            else
+                video.setStatus(0);
+            video.setCameraIP(object.getString("cameraIP"));
+
+        }
+        return video;
     }
+
+    @Override
+    public void voiceDispose(MultipartFile file, String fileName, Voice mediaVoice) {
+        String rawPath = mediaVoice.getRawPath() + fileName;
+        String wavPath = mediaVoice.getWavPath() + fileName;
+        if (uploadFIleUtil.uploadFile(file, rawPath + ".raw",mediaVoice.getWavPath())) {
+            String[] cmd = {"cmd", "/C", "ffmpeg -loglevel quiet -y -i " + rawPath + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + wavPath + ".wav"};
+            Process process;
+            try {
+                process = Runtime.getRuntime().exec(cmd);
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

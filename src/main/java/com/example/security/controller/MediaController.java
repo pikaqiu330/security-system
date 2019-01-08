@@ -3,13 +3,12 @@ package com.example.security.controller;
 import com.example.security.config.LoadUserBean;
 import com.example.security.domain.Media;
 import com.example.security.domain.User;
+import com.example.security.domain.Video;
 import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import com.example.security.util.LocalUtil;
 import com.example.security.util.UploadFIleUtil;
 import com.example.security.util.VoiceLinkJNI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,8 +17,6 @@ import java.util.List;
 
 @RestController
 public class MediaController {
-    private static final Logger LOG = LoggerFactory.getLogger(MediaController.class);
-
     @Autowired
     private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
 
@@ -40,17 +37,13 @@ public class MediaController {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
         Voice mediaVoice = media.getVoice();
-        if(mediaVoice.getNvms() == 0){
+        if(mediaVoice.getNvms() == 0){      //若监控端在远端收音则修改标识为本端录音并且累计变量count归零
             mediaVoice.setNvms(1);
             mediaVoice.setCount(0);
         }
-        String rawPath = mediaVoice.getRawPath() + name;
         String wavPath = mediaVoice.getWavPath() + name;
-        if (uploadFIleUtil.uploadFile(file, rawPath + ".raw",mediaVoice.getWavPath())) {
-            String[] cmd = {"cmd", "/C", "ffmpeg -loglevel quiet -y -i " + rawPath + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + wavPath + ".wav"};
-            mediaService.clearProcess(cmd); //清空缓冲区
-        }
-        boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(wavPath + ".wav");
+        mediaService.voiceDispose(file,name,mediaVoice);        //上传音频并转换wav
+        boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(wavPath + ".wav");     //调用c++算法
         System.out.println(b_jni);
         mediaVoice.setName(name);
         return mediaService.Detection(b_jni,mediaVoice);
@@ -69,21 +62,16 @@ public class MediaController {
         String remotePath = null;
         for (String in : LoadUserBean.map.keySet()) {
              //map.keySet()返回的是所有key的值
-            if(!in.equals(ip)){
+            if(!in.equals(ip)){     //获取到对端的音频路径
                 remotePath = LoadUserBean.map.get(in).getVoice().getWavPath();
             }
          }
         Voice mediaVoice = media.getVoice();
-        if(mediaVoice.getNvms() == 1){
+        if(mediaVoice.getNvms() == 1){  //若监控端在本端录音则修改标识为远端收音并且累计变量count归零
             mediaVoice.setNvms(0);
             mediaVoice.setCount(0);
         }
-        List<Voice> voiceList = uploadFIleUtil.getVoiceList(remotePath,mediaVoice);
-        for (Voice voice:voiceList
-             ) {
-            System.out.println(voice.getName());
-        }
-        return voiceList;
+        return uploadFIleUtil.getVoiceList(remotePath,mediaVoice);
     }
 
     @RequestMapping("initialize")
@@ -93,4 +81,8 @@ public class MediaController {
         return media.getUser();
     }
 
+    @RequestMapping(value = "crowdingDetection",method = RequestMethod.POST)
+    public Video CallBackRequest(HttpServletRequest request){
+        return mediaService.ReadAsChars(request);
+    }
 }

@@ -2,7 +2,7 @@
   "userList": [
     {
       "name" : "clientA",
-      "ip" : "10.8.0.97",
+      "ip" : "10.73.232.75",
       "videoLocalIp" : "2222222222",
       "videoRemoteIp" : "3333333333",
       "wavPath" : "E:/voice/clientA_wav/",
