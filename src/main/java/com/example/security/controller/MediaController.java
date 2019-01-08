@@ -2,6 +2,7 @@ package com.example.security.controller;
 
 import com.example.security.config.LoadUserBean;
 import com.example.security.domain.Media;
+import com.example.security.domain.User;
 import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import com.example.security.util.LocalUtil;
@@ -13,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
-
 
 @RestController
 public class MediaController {
@@ -48,13 +47,8 @@ public class MediaController {
         String rawPath = mediaVoice.getRawPath() + name;
         String wavPath = mediaVoice.getWavPath() + name;
         if (uploadFIleUtil.uploadFile(file, rawPath + ".raw",mediaVoice.getWavPath())) {
-            String[] cmd = {"cmd", "/C", "ffmpeg -y -i " + rawPath + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + wavPath + ".wav"};
-            try {
-                Process process = Runtime.getRuntime().exec(cmd);
-                process.waitFor();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            String[] cmd = {"cmd", "/C", "ffmpeg -loglevel quiet -y -i " + rawPath + ".raw -f wav -ar 16000 -ac 1 -acodec pcm_s16le " + wavPath + ".wav"};
+            mediaService.clearProcess(cmd); //清空缓冲区
         }
         boolean b_jni = voiceLinkJNI.AnomalyDetectionJNI(wavPath + ".wav");
         System.out.println(b_jni);
@@ -92,10 +86,11 @@ public class MediaController {
         return voiceList;
     }
 
-    @RequestMapping("/")
-    public boolean hello() {
-
-        return true;
+    @RequestMapping("initialize")
+    public User initialize(HttpServletRequest request) {
+        String ip = LocalUtil.getRealIp(request);
+        Media media = LoadUserBean.map.get(ip);
+        return media.getUser();
     }
 
 }

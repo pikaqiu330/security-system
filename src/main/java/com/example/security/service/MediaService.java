@@ -9,4 +9,6 @@ public interface MediaService {
      * @return 一个音频实例
      */
     Voice Detection(Boolean b_jni, Voice voice);
+
+    void clearProcess(String[] command);
 }

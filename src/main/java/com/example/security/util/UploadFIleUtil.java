@@ -1,6 +1,5 @@
 package com.example.security.util;
 
-import com.example.security.domain.Media;
 import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import org.slf4j.Logger;
@@ -105,6 +104,18 @@ public class UploadFIleUtil {
         if(files == null || files.length < 7){
             return false;
         }
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File file, File newFile) {
+                if (file.lastModified() < newFile.lastModified()) {
+                    return -1;
+                } else if (file.lastModified() == newFile.lastModified()) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        });
         for (int i = 0; i < files.length-6; i++) {
             //删除子文件
             if (files[i].isFile()) {
@@ -160,10 +171,10 @@ public class UploadFIleUtil {
                     }
                 }
             });
-            if (listFiles.length > 6){
-                File[] files = new File[6];
+            if (listFiles.length > 3){
+                File[] files = new File[3];
                 int num = 0;
-                for (int i = listFiles.length - 6;i < listFiles.length; i++){
+                for (int i = listFiles.length - 3;i < listFiles.length; i++){
                     files[num++] = listFiles[i];
                 }
                 listFiles = files;
