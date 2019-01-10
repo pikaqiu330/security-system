@@ -2,6 +2,7 @@ package com.example.security.config;
 
 import com.example.security.domain.Media;
 import com.example.security.domain.User;
+import com.example.security.domain.Video;
 import com.example.security.domain.Voice;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -44,10 +45,12 @@ public class LoadUserBean implements CommandLineRunner {
             Media media;
             User user;
             Voice voice;
+            Video video;
             for(int i = 0;i < userList.size();i++){
                 media = new Media();
                 user = new User();
                 voice = new Voice();
+                video = new Video();
                 JSONObject userJsonObject = userList.getJSONObject(i);
                 user.setName(userJsonObject.getString("name"));
                 user.setIp(userJsonObject.getString("ip"));
@@ -55,9 +58,11 @@ public class LoadUserBean implements CommandLineRunner {
                 user.setVideoRemoteIp(userJsonObject.getString("videoRemoteIp"));
                 voice.setRawPath(userJsonObject.getString("rawPath"));
                 voice.setWavPath(userJsonObject.getString("wavPath"));
-                voice.setNvms(0);
+                video.setStatus("Normal");
+                media.setNvms(1);
                 media.setUser(user);
                 media.setVoice(voice);
+                media.setVideo(video);
                 map.put(user.getIp(),media);
             }
         }

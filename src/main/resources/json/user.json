@@ -2,8 +2,8 @@
   "userList": [
     {
       "name" : "clientA",
-      "ip" : "10.73.232.75",
-      "videoLocalIp" : "2222222222",
+      "ip" : "10.73.191.227",
+      "videoLocalIp" : "192.168.1.6",
       "videoRemoteIp" : "3333333333",
       "wavPath" : "E:/voice/clientA_wav/",
       "rawPath" : "E:/voice/clientA_raw/"
@@ -11,9 +11,9 @@
 
     {
       "name" : "clientB",
-      "ip" : "10.8.0.104",
+      "ip" : "10.73.234.223",
       "videoLocalIp" : "3333333333",
-      "videoRemoteIp" : "2222222222",
+      "videoRemoteIp" : "192.168.1.6",
       "wavPath" : "E:/voice/clientB_wav/",
       "rawPath" : "E:/voice/clientB_raw/"
     }

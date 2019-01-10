@@ -1,5 +1,7 @@
 package com.example.security.service.impl;
 import com.alibaba.dubbo.common.utils.IOUtils;
+import com.example.security.config.LoadUserBean;
+import com.example.security.domain.Media;
 import com.example.security.domain.Video;
 import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
@@ -8,7 +10,6 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,12 +66,8 @@ public class MediaServiceImpl implements MediaService {
             JSONObject object = JSONObject.fromObject(body);
             video.setThreshold(object.getInt("threshold"));
             video.setCurrentNumber(object.getInt("currentNumber"));
-            if(object.getString("status").equals("warning"))
-                video.setStatus(1);
-            else
-                video.setStatus(0);
+            video.setStatus(object.getString("status"));
             video.setCameraIP(object.getString("cameraIP"));
-
         }
         return video;
     }
@@ -87,6 +84,94 @@ public class MediaServiceImpl implements MediaService {
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void videoDispose(Video video) {
+        if(video.getStatus().equalsIgnoreCase("Warning")){
+            for (String in:LoadUserBean.map.keySet()
+                 ) {
+                Media media = LoadUserBean.map.get(in);
+                WebSocketServerImpl socketServer = WebSocketServerImpl.map.get(media.getUser().getIp());
+                if(socketServer != null) {
+                    if (media.getNvms().equals(1)) {
+                        if (media.getUser().getVideoLocalIp().equals(video.getCameraIP())) {
+                            //if (media.getVideo().getStatus().equalsIgnoreCase("Normal")) {
+                                media.getVideo().setStatus("Warning");
+                                socketServer.sendMessage("Warning");
+                            //}
+                            media.getVideo().setTimestamp(System.currentTimeMillis());
+                        }
+                    } else {
+                        if (media.getUser().getVideoRemoteIp().equals(video.getCameraIP())) {
+                            socketServer.sendMessage("Warning");
+                            for (String is : LoadUserBean.map.keySet()
+                            ) {
+                                Media isMedia = LoadUserBean.map.get(is);
+                                if (!in.equals(is)) {
+                                    isMedia.getVideo().setStatus("Warning");
+                                    isMedia.getVideo().setTimestamp(System.currentTimeMillis());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else {
+            for (String in:LoadUserBean.map.keySet()
+                 ) {
+                Media media = LoadUserBean.map.get(in);
+                WebSocketServerImpl socketServer = WebSocketServerImpl.map.get(media.getUser().getIp());
+                if (media.getNvms().equals(1)) {
+                    if(media.getUser().getVideoLocalIp().equals(video.getCameraIP())){
+                        long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
+                        if(outTime > 30){
+                            socketServer.sendMessage(media.getVideo().getStatus());
+                        }else {
+                            media.getVideo().setIsAnomaly(1);
+                        }
+                    }
+                }else {
+                    if(media.getUser().getVideoRemoteIp().equals(video.getCameraIP())){
+                        for (String is:LoadUserBean.map.keySet()
+                             ) {
+                            if(!in.equals(is)){
+                                Media isMedia = LoadUserBean.map.get(is);
+                                long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
+                                if(outTime < 30){
+                                    isMedia.getVideo().setIsAnomaly(1);
+                                }else {
+                                    socketServer.sendMessage(isMedia.getVideo().getStatus());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void videoNvmsSwitch(Media media, String status, Integer nvms) {
+        media.setNvms(nvms);
+        String ip = media.getUser().getIp();
+        WebSocketServerImpl socketServer;
+        if(nvms.equals(1)){
+            if(!status.equalsIgnoreCase(media.getVideo().getStatus())){
+                socketServer = WebSocketServerImpl.map.get(ip);
+                socketServer.sendMessage(media.getVideo().getStatus());
+            }
+        }else {
+            for (String in:LoadUserBean.map.keySet()
+            ) {
+                if(!ip.equals(in)){
+                    if(!status.equalsIgnoreCase(LoadUserBean.map.get(in).getVideo().getStatus())){
+                        socketServer = WebSocketServerImpl.map.get(ip);
+                        socketServer.sendMessage(LoadUserBean.map.get(in).getVideo().getStatus());
+                    }
+                }
             }
         }
     }

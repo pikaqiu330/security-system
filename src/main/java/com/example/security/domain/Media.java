@@ -6,6 +6,7 @@ package com.example.security.domain;
  */
 
 public class Media {
+    private Integer nvms;       //监控端：1本端/0远端
 
     private User user;
 
@@ -35,5 +36,23 @@ public class Media {
 
     public void setVideo(Video video) {
         this.video = video;
+    }
+
+    public Integer getNvms() {
+        return nvms;
+    }
+
+    public void setNvms(Integer nvms) {
+        this.nvms = nvms;
+    }
+
+    @Override
+    public String toString() {
+        return "Media{" +
+                "nvms=" + nvms +
+                ", user=" + user +
+                ", voice=" + voice +
+                ", video=" + video +
+                '}';
     }
 }

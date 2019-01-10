@@ -6,7 +6,7 @@ package com.example.security.domain;
  */
 public class Voice {
 
-    private Integer nvms;       //监控端：1本端/0远端
+
 
     private String wavPath;     //wav路径
 
@@ -78,18 +78,9 @@ public class Voice {
         this.isAnomaly = isAnomaly;
     }
 
-    public Integer getNvms() {
-        return nvms;
-    }
-
-    public void setNvms(Integer nvms) {
-        this.nvms = nvms;
-    }
-
     @Override
     public String toString() {
         return "Voice{" +
-                "nvms=" + nvms +
                 ", wavPath='" + wavPath + '\'' +
                 ", rawPath='" + rawPath + '\'' +
                 ", status=" + status +

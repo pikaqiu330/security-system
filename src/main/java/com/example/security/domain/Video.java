@@ -10,9 +10,29 @@ public class Video {
 
     private Integer currentNumber;      //当前人数
 
-    private Integer status;     //warning:1/normal:0
+    private String status;     //warning/normal
 
     private String cameraIP;        //增加一个摄像头的IP地址
+
+    private long timestamp;     //时间戳
+
+    private Integer isAnomaly;      //1：接收到了正常告警、0：没有
+
+    public Integer getIsAnomaly() {
+        return isAnomaly;
+    }
+
+    public void setIsAnomaly(Integer isAnomaly) {
+        this.isAnomaly = isAnomaly;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public Integer getThreshold() {
         return threshold;
@@ -30,11 +50,11 @@ public class Video {
         this.currentNumber = currentNumber;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -51,8 +71,10 @@ public class Video {
         return "Video{" +
                 "threshold=" + threshold +
                 ", currentNumber=" + currentNumber +
-                ", status=" + status +
+                ", status='" + status + '\'' +
                 ", cameraIP='" + cameraIP + '\'' +
+                ", timestamp=" + timestamp +
+                ", isAnomaly=" + isAnomaly +
                 '}';
     }
 }

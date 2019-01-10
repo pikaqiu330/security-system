@@ -1,11 +1,9 @@
 package com.example.security.service;
+import com.example.security.domain.Media;
 import com.example.security.domain.Video;
 import com.example.security.domain.Voice;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 public interface MediaService {
 
@@ -16,6 +14,11 @@ public interface MediaService {
      */
     Voice Detection(Boolean b_jni, Voice voice);
 
+    /**
+     * 获取请求体里面的参数信息
+     * @param request
+     * @return
+     */
     Video ReadAsChars(HttpServletRequest request);
 
     /**
@@ -25,4 +28,20 @@ public interface MediaService {
      * @param mediaVoice voice对象
      */
     void voiceDispose(MultipartFile file, String fileName, Voice mediaVoice);
+
+    /**
+     * 告警上报处理
+     * @param video
+     */
+    void videoDispose(Video video);
+
+
+    /**
+     * 视频监控端切换处理
+     * @param media
+     * @param status
+     * @param nvms
+     */
+    void videoNvmsSwitch(Media media,String status,Integer nvms);
+
 }

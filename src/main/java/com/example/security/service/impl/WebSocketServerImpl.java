@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketServerImpl {
     private static final Logger LOG = LoggerFactory.getLogger(MediaController.class);
 
-    private static Map<String,WebSocketServerImpl> map = new ConcurrentHashMap<>();
+    public static Map<String,WebSocketServerImpl> map = new ConcurrentHashMap<>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
@@ -29,11 +29,7 @@ public class WebSocketServerImpl {
         map.put(ip,this);
         //webSocketSet.add(this);     //加入set中
         LOG.info("有新连接加入");
-        try {
-            sendMessage("连接成功");
-        } catch (IOException e) {
-            LOG.error("websocket IO异常");
-        }
+        sendMessage("连接成功");
     }
 
     /**
@@ -80,7 +76,7 @@ public class WebSocketServerImpl {
     /**
      * 群发自定义消息
      * */
-    public static void sendInfo(String message) throws IOException {
+    public void sendInfo(String message) throws IOException {
         LOG.info(message);
         sendMassInfo(message);
         /*for (WebSocketServerImpl item : webSocketSet) {
@@ -92,19 +88,19 @@ public class WebSocketServerImpl {
         }*/
     }
 
-    private void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+    public void sendMessage(String message) {
+        try {
+            this.session.getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void sendMassInfo(String message){
+    private void sendMassInfo(String message){
         for (String in: map.keySet()
         ) {
             WebSocketServerImpl socketServer = map.get(in);
-            try {
-                socketServer.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            socketServer.sendMessage(message);
         }
     }
 }

@@ -37,8 +37,8 @@ public class MediaController {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
         Voice mediaVoice = media.getVoice();
-        if(mediaVoice.getNvms() == 0){      //若监控端在远端收音则修改标识为本端录音并且累计变量count归零
-            mediaVoice.setNvms(1);
+        if(media.getNvms() == 0){      //若监控端在远端收音则修改标识为本端录音并且累计变量count归零
+            media.setNvms(1);
             mediaVoice.setCount(0);
         }
         String wavPath = mediaVoice.getWavPath() + name;
@@ -67,8 +67,8 @@ public class MediaController {
             }
          }
         Voice mediaVoice = media.getVoice();
-        if(mediaVoice.getNvms() == 1){  //若监控端在本端录音则修改标识为远端收音并且累计变量count归零
-            mediaVoice.setNvms(0);
+        if(media.getNvms() == 1){  //若监控端在本端录音则修改标识为远端收音并且累计变量count归零
+            media.setNvms(0);
             mediaVoice.setCount(0);
         }
         return uploadFIleUtil.getVoiceList(remotePath,mediaVoice);
@@ -78,11 +78,26 @@ public class MediaController {
     public User initialize(HttpServletRequest request) {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
-        return media.getUser();
+        User user = null;
+        if(media != null){
+            Voice voice = media.getVoice();
+            voice.setCount(0);
+            voice.setIsAnomaly(0);
+            user = media.getUser();
+        }
+        return user;
     }
 
     @RequestMapping(value = "crowdingDetection",method = RequestMethod.POST)
-    public Video CallBackRequest(HttpServletRequest request){
-        return mediaService.ReadAsChars(request);
+    public void CallBackRequest(HttpServletRequest request){
+        Video video = mediaService.ReadAsChars(request);
+        mediaService.videoDispose(video);
+    }
+
+    @RequestMapping(value = "switchLocalRemote")
+    public void switchLocalRemote(HttpServletRequest request,@RequestParam("status") String status,@RequestParam("nvms") Integer nvms){
+        String ip = LocalUtil.getRealIp(request);
+        Media media = LoadUserBean.map.get(ip);
+        mediaService.videoNvmsSwitch(media,status,nvms);
     }
 }
