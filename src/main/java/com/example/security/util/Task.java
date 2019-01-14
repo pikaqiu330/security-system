@@ -48,13 +48,15 @@ public class Task {
                                 if(!remoteIp.equals(in)){
                                     Media mediaRemote = LoadUserBean.map.get(remoteIp);
                                     if(mediaRemote.getNvms().equals(0)){
-                                        if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
+                                        //if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
                                             socketServer.sendInfo("Normal");
-                                        }
+                                            LOG.info("remote and local Normal...");
+                                        //}
                                     }else {
                                         socketServer.sendMessage("Normal");
+                                        LOG.info("local Normal...");
                                     }
-                                    media.getVideo().setStatus("Normal");
+                                    //media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);
                                 }
                             }
@@ -72,13 +74,15 @@ public class Task {
                                 if (outTime > 30) {
                                     Media mediaRemote = LoadUserBean.map.get(is);
                                     if(mediaRemote.getNvms().equals(1)){
-                                        if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
+                                        //if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
                                             socketServer.sendInfo("Normal");
-                                        }
+                                            LOG.info("remote and local Normal...");
+                                        //}
                                     }else {
                                         socketServer.sendMessage("Normal");
+                                        LOG.info("remote Normal...");
                                     }
-                                    media.getVideo().setStatus("Normal");
+                                    //media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);
                                 }
                             }

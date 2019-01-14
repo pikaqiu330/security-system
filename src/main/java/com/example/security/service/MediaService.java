@@ -15,7 +15,7 @@ public interface MediaService {
     Voice Detection(Boolean b_jni, Voice voice);
 
     /**
-     * 获取请求体里面的参数信息
+     * 解析请求体里面的参数信息
      * @param request
      * @return
      */

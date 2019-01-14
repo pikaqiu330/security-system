@@ -78,14 +78,14 @@ public class MediaController {
     public User initialize(HttpServletRequest request) {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
-        User user = null;
-        if(media != null){
+        //User user = null;
+        //if(media != null){
             Voice voice = media.getVoice();
             voice.setCount(0);
             voice.setIsAnomaly(0);
-            user = media.getUser();
-        }
-        return user;
+            //user = media.getUser();
+        //}
+        return media.getUser();
     }
 
     @RequestMapping(value = "onap-ai/report-status",method = RequestMethod.POST)
@@ -100,7 +100,6 @@ public class MediaController {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
         media.setNvms(nvms);
-        System.out.println(nvms);
         mediaService.videoNvmsSwitch(media,status);
     }
 }

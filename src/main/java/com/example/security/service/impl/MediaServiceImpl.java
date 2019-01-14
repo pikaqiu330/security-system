@@ -22,7 +22,7 @@ public class MediaServiceImpl implements MediaService {
     @Autowired
     private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
 
-    private static final Logger LOG = LoggerFactory.getLogger(UploadFIleUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MediaServiceImpl.class);
 
     @Override
     public Voice Detection(Boolean b_jni, Voice voice) {
@@ -31,10 +31,10 @@ public class MediaServiceImpl implements MediaService {
                 voice.setCount(0);
                 voice.setRefresh(0);
             }else {
-                voice.setIsAnomaly(1);
+                voice.setIsAnomaly(1);  //出现异常音
                 voice.setRefresh(1);
             }
-            voice.setIsAnomaly(1);    //出现异常音
+            //voice.setIsAnomaly(1);    //出现异常音
             voice.setStatus(1);
         }else {
             if (voice.getIsAnomaly() == 1){   //前面出现异常音
@@ -107,10 +107,12 @@ public class MediaServiceImpl implements MediaService {
                                 if(!is.equals(in)){
                                     Media mediaRemote = LoadUserBean.map.get(is);
                                     if(mediaRemote.getNvms().equals(0)){
+                                        //若远端与本端正在同时检测这个摄像头则同时推送消息
                                         socketServer.sendInfo("Warning");
                                         LOG.info("remote and local Warning...");
                                     }else {
-                                        socketServer.sendMessage("local Warning...");
+                                        socketServer.sendMessage("Warning");
+                                        LOG.info("local Warning...");
                                     }
                                     media.getVideo().setStatus("Warning");
                                     media.getVideo().setTimestamp(System.currentTimeMillis());
@@ -124,6 +126,7 @@ public class MediaServiceImpl implements MediaService {
                                 if (!in.equals(is)) {
                                     Media isMedia = LoadUserBean.map.get(is);
                                     if(isMedia.getNvms().equals(1)){
+                                        //若远端与本端正在同时检测这个摄像头则同时推送消息
                                         socketServer.sendInfo("Warning");
                                         LOG.info("remote and local Warning...");
                                     }else {
@@ -151,6 +154,7 @@ public class MediaServiceImpl implements MediaService {
                             media.getVideo().setStatus(video.getStatus());
                         }else {
                             media.getVideo().setIsAnomaly(1);
+                            media.getVideo().setStatus(video.getStatus());
                         }
                     }
                 }else {
@@ -162,6 +166,7 @@ public class MediaServiceImpl implements MediaService {
                                 long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
                                 if(outTime < 30){
                                     isMedia.getVideo().setIsAnomaly(1);
+                                    isMedia.getVideo().setStatus(video.getStatus());
                                 }else {
                                     socketServer.sendMessage(video.getStatus());
                                     isMedia.getVideo().setStatus(video.getStatus());

@@ -100,7 +100,9 @@ public class WebSocketServerImpl {
         for (String in: map.keySet()
         ) {
             WebSocketServerImpl socketServer = map.get(in);
-            socketServer.sendMessage(message);
+            if(socketServer != null) {
+                socketServer.sendMessage(message);
+            }
         }
     }
 }
