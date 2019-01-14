@@ -7,6 +7,8 @@ import com.example.security.domain.Voice;
 import com.example.security.service.MediaService;
 import com.example.security.util.UploadFIleUtil;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +21,8 @@ import java.io.InputStreamReader;
 public class MediaServiceImpl implements MediaService {
     @Autowired
     private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
+
+    private static final Logger LOG = LoggerFactory.getLogger(UploadFIleUtil.class);
 
     @Override
     public Voice Detection(Boolean b_jni, Voice voice) {
@@ -98,21 +102,34 @@ public class MediaServiceImpl implements MediaService {
                 if(socketServer != null) {
                     if (media.getNvms().equals(1)) {
                         if (media.getUser().getVideoLocalIp().equals(video.getCameraIP())) {
-                            //if (media.getVideo().getStatus().equalsIgnoreCase("Normal")) {
-                                media.getVideo().setStatus("Warning");
-                                socketServer.sendMessage("Warning");
-                                System.out.println("local...");
-                            //}
-                            media.getVideo().setTimestamp(System.currentTimeMillis());
+                            for (String is:LoadUserBean.map.keySet()
+                                 ) {
+                                if(!is.equals(in)){
+                                    Media mediaRemote = LoadUserBean.map.get(is);
+                                    if(mediaRemote.getNvms().equals(0)){
+                                        socketServer.sendInfo("Warning");
+                                        LOG.info("remote and local Warning...");
+                                    }else {
+                                        socketServer.sendMessage("local Warning...");
+                                    }
+                                    media.getVideo().setStatus("Warning");
+                                    media.getVideo().setTimestamp(System.currentTimeMillis());
+                                }
+                            }
                         }
                     } else {
                         if (media.getUser().getVideoRemoteIp().equals(video.getCameraIP())) {
-                            socketServer.sendMessage("Warning");
-                            System.out.println("remote...");
                             for (String is : LoadUserBean.map.keySet()
                             ) {
-                                Media isMedia = LoadUserBean.map.get(is);
                                 if (!in.equals(is)) {
+                                    Media isMedia = LoadUserBean.map.get(is);
+                                    if(isMedia.getNvms().equals(1)){
+                                        socketServer.sendInfo("Warning");
+                                        LOG.info("remote and local Warning...");
+                                    }else {
+                                        socketServer.sendMessage("Warning");
+                                        LOG.info("remote Warning...");
+                                    }
                                     isMedia.getVideo().setStatus("Warning");
                                     isMedia.getVideo().setTimestamp(System.currentTimeMillis());
                                 }
