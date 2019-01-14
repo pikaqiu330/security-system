@@ -101,12 +101,14 @@ public class MediaServiceImpl implements MediaService {
                             //if (media.getVideo().getStatus().equalsIgnoreCase("Normal")) {
                                 media.getVideo().setStatus("Warning");
                                 socketServer.sendMessage("Warning");
+                                System.out.println("local...");
                             //}
                             media.getVideo().setTimestamp(System.currentTimeMillis());
                         }
                     } else {
                         if (media.getUser().getVideoRemoteIp().equals(video.getCameraIP())) {
                             socketServer.sendMessage("Warning");
+                            System.out.println("remote...");
                             for (String is : LoadUserBean.map.keySet()
                             ) {
                                 Media isMedia = LoadUserBean.map.get(is);
@@ -128,7 +130,8 @@ public class MediaServiceImpl implements MediaService {
                     if(media.getUser().getVideoLocalIp().equals(video.getCameraIP())){
                         long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
                         if(outTime > 30){
-                            socketServer.sendMessage(media.getVideo().getStatus());
+                            socketServer.sendMessage(video.getStatus());
+                            media.getVideo().setStatus(video.getStatus());
                         }else {
                             media.getVideo().setIsAnomaly(1);
                         }
@@ -137,13 +140,14 @@ public class MediaServiceImpl implements MediaService {
                     if(media.getUser().getVideoRemoteIp().equals(video.getCameraIP())){
                         for (String is:LoadUserBean.map.keySet()
                              ) {
-                            if(!in.equals(is)){
+                            if(!is.equals(in)){
                                 Media isMedia = LoadUserBean.map.get(is);
                                 long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
                                 if(outTime < 30){
                                     isMedia.getVideo().setIsAnomaly(1);
                                 }else {
-                                    socketServer.sendMessage(isMedia.getVideo().getStatus());
+                                    socketServer.sendMessage(video.getStatus());
+                                    isMedia.getVideo().setStatus(video.getStatus());
                                 }
                             }
                         }
@@ -154,11 +158,10 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void videoNvmsSwitch(Media media, String status, Integer nvms) {
-        media.setNvms(nvms);
+    public void videoNvmsSwitch(Media media, String status) {
         String ip = media.getUser().getIp();
         WebSocketServerImpl socketServer;
-        if(nvms.equals(1)){
+        if(media.getNvms().equals(1)){
             if(!status.equalsIgnoreCase(media.getVideo().getStatus())){
                 socketServer = WebSocketServerImpl.map.get(ip);
                 socketServer.sendMessage(media.getVideo().getStatus());
@@ -166,10 +169,11 @@ public class MediaServiceImpl implements MediaService {
         }else {
             for (String in:LoadUserBean.map.keySet()
             ) {
-                if(!ip.equals(in)){
-                    if(!status.equalsIgnoreCase(LoadUserBean.map.get(in).getVideo().getStatus())){
+                if(!in.equals(ip)){
+                    Video video = LoadUserBean.map.get(in).getVideo();
+                    if(!status.equalsIgnoreCase(video.getStatus())){
                         socketServer = WebSocketServerImpl.map.get(ip);
-                        socketServer.sendMessage(LoadUserBean.map.get(in).getVideo().getStatus());
+                        socketServer.sendMessage(video.getStatus());
                     }
                 }
             }

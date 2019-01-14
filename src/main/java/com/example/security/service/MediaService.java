@@ -40,8 +40,7 @@ public interface MediaService {
      * 视频监控端切换处理
      * @param media
      * @param status
-     * @param nvms
      */
-    void videoNvmsSwitch(Media media,String status,Integer nvms);
+    void videoNvmsSwitch(Media media,String status);
 
 }

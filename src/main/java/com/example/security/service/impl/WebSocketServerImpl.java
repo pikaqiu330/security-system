@@ -76,7 +76,7 @@ public class WebSocketServerImpl {
     /**
      * 群发自定义消息
      * */
-    public void sendInfo(String message) throws IOException {
+    public void sendInfo(String message){
         LOG.info(message);
         sendMassInfo(message);
         /*for (WebSocketServerImpl item : webSocketSet) {

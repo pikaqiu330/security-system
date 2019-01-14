@@ -39,13 +39,49 @@ public class Task {
             WebSocketServerImpl socketServer = WebSocketServerImpl.map.get(media.getUser().getIp());
             if(socketServer != null) {
                 if (media.getNvms().equals(1)) {
-                    taskProcessing(media,socketServer);
+                    //taskProcessing(media,socketServer);
+                    if(media.getVideo().getIsAnomaly().equals(1)){
+                        long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
+                        if (outTime > 30) {
+                            for (String remoteIp:LoadUserBean.map.keySet()
+                            ) {
+                                if(!remoteIp.equals(in)){
+                                    Media mediaRemote = LoadUserBean.map.get(remoteIp);
+                                    if(mediaRemote.getNvms().equals(0)){
+                                        if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
+                                            socketServer.sendInfo("Normal");
+                                        }
+                                    }else {
+                                        socketServer.sendMessage("Normal");
+                                    }
+                                    media.getVideo().setStatus("Normal");
+                                    media.getVideo().setIsAnomaly(0);
+                                }
+                            }
+                        }
+                    }
+
                 } else {
                     for (String is : LoadUserBean.map.keySet()
                     ) {
-                        Media isMedia = LoadUserBean.map.get(is);
-                        if (!in.equals(is)) {
-                            taskProcessing(isMedia,socketServer);
+                        if (!is.equals(in)) {
+                            Media isMedia = LoadUserBean.map.get(is);
+                            //taskProcessing(isMedia,socketServer);
+                            if(isMedia.getVideo().getIsAnomaly().equals(1)){
+                                long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
+                                if (outTime > 30) {
+                                    Media mediaRemote = LoadUserBean.map.get(is);
+                                    if(mediaRemote.getNvms().equals(1)){
+                                        if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
+                                            socketServer.sendInfo("Normal");
+                                        }
+                                    }else {
+                                        socketServer.sendMessage("Normal");
+                                    }
+                                    media.getVideo().setStatus("Normal");
+                                    media.getVideo().setIsAnomaly(0);
+                                }
+                            }
                         }
                     }
                 }
@@ -53,16 +89,17 @@ public class Task {
         }
     }
 
-    private void taskProcessing(Media media,WebSocketServerImpl socketServer){
-        if(media.getVideo().getStatus().equalsIgnoreCase("Warning")){
+    /*private void taskProcessing(Media media,WebSocketServerImpl socketServer){
+        //if(media.getVideo().getStatus().equalsIgnoreCase("Warning")){
             if(media.getVideo().getIsAnomaly().equals(1)){
                 long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
                 if (outTime > 30) {
                     socketServer.sendMessage("Normal");
                     media.getVideo().setStatus("Normal");
+                    media.getVideo().setIsAnomaly(0);
                 }
             }
-        }
-    }
+        //}
+    }*/
 
 }

@@ -88,7 +88,7 @@ public class MediaController {
         return user;
     }
 
-    @RequestMapping(value = "crowdingDetection",method = RequestMethod.POST)
+    @RequestMapping(value = "onap-ai/report-status",method = RequestMethod.POST)
     public void CallBackRequest(HttpServletRequest request){
         Video video = mediaService.ReadAsChars(request);
         mediaService.videoDispose(video);
@@ -98,6 +98,8 @@ public class MediaController {
     public void switchLocalRemote(HttpServletRequest request,@RequestParam("status") String status,@RequestParam("nvms") Integer nvms){
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
-        mediaService.videoNvmsSwitch(media,status,nvms);
+        media.setNvms(nvms);
+        System.out.println(nvms);
+        mediaService.videoNvmsSwitch(media,status);
     }
 }
