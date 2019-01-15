@@ -58,6 +58,7 @@ public class LoadUserBean implements CommandLineRunner {
                 user.setVideoRemoteIp(userJsonObject.getString("videoRemoteIp"));
                 voice.setRawPath(userJsonObject.getString("rawPath"));
                 voice.setWavPath(userJsonObject.getString("wavPath"));
+                voice.setStatus("Normal");
                 video.setStatus("Normal");
                 video.setIsAnomaly(0);
                 media.setNvms(1);

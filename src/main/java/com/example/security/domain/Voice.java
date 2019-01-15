@@ -12,7 +12,7 @@ public class Voice {
 
     private String rawPath;     //raw路径
 
-    private Integer status;     //状态：1异常/0正常
+    private String status;     //状态：1异常/0正常
 
     private Integer refresh;    //刷新标识：1刷新/0不刷新
 
@@ -38,11 +38,11 @@ public class Voice {
         this.rawPath = rawPath;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

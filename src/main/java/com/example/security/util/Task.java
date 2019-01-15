@@ -14,20 +14,20 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Task {
-    private static final Logger LOG = LoggerFactory.getLogger(Task.class);
+    private static final Logger logger = LoggerFactory.getLogger(Task.class);
 
     @Autowired
     private UploadFIleUtil uploadFIleUtil;
 
     @Scheduled(cron="0 0/5 * * * ?")   //每5分钟执行一次
     private void deleteVoiceFile(){
-        LOG.info("开始清理服务器音频文件...");
+        logger.info("开始清理服务器音频文件...");
         for (String in : LoadUserBean.map.keySet()) {
             Media media = LoadUserBean.map.get(in);//得到每个key多对用value的值
             uploadFIleUtil.deleteDirectory(media.getVoice().getRawPath());
             uploadFIleUtil.deleteDirectory(media.getVoice().getWavPath());
          }
-        LOG.info("清理服务器音频文件完成！");
+        logger.info("清理服务器音频文件完成！");
     }
 
     @Scheduled(cron="0/5 * * * * ?")   //每5秒钟执行一次
@@ -47,10 +47,10 @@ public class Task {
                                     Media mediaRemote = LoadUserBean.map.get(remoteIp);
                                     if(mediaRemote.getNvms().equals(0)){
                                         socketServer.sendInfo("Normal");
-                                        LOG.info("remote and local Normal...");
+                                        logger.info("local and remote Normal...");
                                     }else {
                                         socketServer.sendMessage("Normal");
-                                        LOG.info("local Normal...");
+                                        logger.info("local Normal...");
                                     }
                                     media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);
@@ -70,10 +70,10 @@ public class Task {
                                     Media mediaRemote = LoadUserBean.map.get(is);
                                     if(mediaRemote.getNvms().equals(1)){
                                         socketServer.sendInfo("Normal");
-                                        LOG.info("remote and local Normal...");
+                                        logger.info("local and remote Normal...");
                                     }else {
                                         socketServer.sendMessage("Normal");
-                                        LOG.info("remote Normal...");
+                                        logger.info("remote Normal...");
                                     }
                                     media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);

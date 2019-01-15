@@ -22,7 +22,7 @@ public class MediaServiceImpl implements MediaService {
     @Autowired
     private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
 
-    private static final Logger LOG = LoggerFactory.getLogger(MediaServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MediaServiceImpl.class);
 
     @Override
     public Voice Detection(Boolean b_jni, Voice voice) {
@@ -35,7 +35,7 @@ public class MediaServiceImpl implements MediaService {
                 voice.setRefresh(1);
             }
             //voice.setIsAnomaly(1);    //出现异常音
-            voice.setStatus(1);
+            voice.setStatus("Warning");
         }else {
             if (voice.getIsAnomaly() == 1){   //前面出现异常音
                 voice.setCount(voice.getCount() + 1);
@@ -49,7 +49,7 @@ public class MediaServiceImpl implements MediaService {
             }else{
                 voice.setRefresh(0);
             }
-            voice.setStatus(0);
+            voice.setStatus("Normal");
         }
         return voice;
     }
@@ -110,12 +110,13 @@ public class MediaServiceImpl implements MediaService {
                                         if (mediaRemote.getNvms().equals(0)) {
                                             //若远端与本端正在同时检测这个摄像头则同时推送消息
                                             socketServer.sendInfo("Warning");
-                                            LOG.info("remote and local Warning...");
+                                            logger.info("local and remote Warning...");
                                         } else {
                                             socketServer.sendMessage("Warning");
-                                            LOG.info("local Warning...");
+                                            logger.info("local Warning...");
                                         }
                                         media.getVideo().setStatus("Warning");
+                                        //调用ONAP调整带宽   查看音频是否占用带宽   如果被占用，则等待释放后调用
                                     }else {
                                         media.getVideo().setIsAnomaly(0);
                                     }
@@ -133,12 +134,13 @@ public class MediaServiceImpl implements MediaService {
                                         if (isMedia.getNvms().equals(1)) {
                                             //若远端与本端正在同时检测这个摄像头则同时推送消息
                                             socketServer.sendInfo("Warning");
-                                            LOG.info("remote and local Warning...");
+                                            logger.info("local and remote Warning...");
                                         } else {
                                             socketServer.sendMessage("Warning");
-                                            LOG.info("remote Warning...");
+                                            logger.info("remote Warning...");
                                         }
                                         isMedia.getVideo().setStatus("Warning");
+                                        //调用ONAP调整带宽    查看音频是否占用带宽    如果被占用，则等待释放后调用
                                     }else {
                                         isMedia.getVideo().setIsAnomaly(0);
                                     }
@@ -158,11 +160,24 @@ public class MediaServiceImpl implements MediaService {
                     if(media.getUser().getVideoLocalIp().equals(video.getCameraIP())){
                         long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
                         if(outTime > 30){
-                            socketServer.sendMessage(video.getStatus());
-                            media.getVideo().setStatus(video.getStatus());
+                            for (String is:LoadUserBean.map.keySet()
+                                 ) {
+                                if(!is.equals(in)){
+                                    Media mediaRemote = LoadUserBean.map.get(is);
+                                    if(!media.getVideo().getStatus().equalsIgnoreCase(video.getStatus())) {
+                                        if (mediaRemote.getNvms().equals(0)) {
+                                            socketServer.sendInfo(video.getStatus());
+                                            logger.info("local and remote Normal...");
+                                        } else {
+                                            socketServer.sendMessage(video.getStatus());
+                                            logger.info("local Normal...");
+                                        }
+                                        media.getVideo().setStatus(video.getStatus());
+                                    }
+                                }
+                            }
                         }else {
                             media.getVideo().setIsAnomaly(1);
-                            //media.getVideo().setStatus(video.getStatus());
                         }
                     }
                 }else {
@@ -174,10 +189,17 @@ public class MediaServiceImpl implements MediaService {
                                 long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
                                 if(outTime < 30){
                                     isMedia.getVideo().setIsAnomaly(1);
-                                    //isMedia.getVideo().setStatus(video.getStatus());
                                 }else {
-                                    socketServer.sendMessage(video.getStatus());
-                                    isMedia.getVideo().setStatus(video.getStatus());
+                                    if(!isMedia.getVideo().getStatus().equalsIgnoreCase(video.getStatus())) {
+                                        if (isMedia.getNvms().equals(1)) {
+                                            socketServer.sendInfo(video.getStatus());
+                                            logger.info("local and remote Normal...");
+                                        } else {
+                                            socketServer.sendMessage(video.getStatus());
+                                            logger.info("remote Normal...");
+                                        }
+                                        isMedia.getVideo().setStatus(video.getStatus());
+                                    }
                                 }
                             }
                         }

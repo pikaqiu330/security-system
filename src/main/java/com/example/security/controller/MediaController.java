@@ -9,7 +9,10 @@ import com.example.security.service.MediaService;
 import com.example.security.util.LocalUtil;
 import com.example.security.util.UploadFIleUtil;
 import com.example.security.util.VoiceLinkJNI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,9 @@ import java.util.List;
 
 @RestController
 public class MediaController {
+
+    //private static final Logger log = LoggerFactory.getLogger(MediaController.class);
+
     @Autowired
     private UploadFIleUtil uploadFIleUtil;      //上传文件工具类
 
@@ -75,16 +81,11 @@ public class MediaController {
     }
 
     @RequestMapping("initialize")
-    public User initialize(HttpServletRequest request) {
+    public User initialize(HttpServletRequest request, Model model) {
         String ip = LocalUtil.getRealIp(request);
         Media media = LoadUserBean.map.get(ip);
-        //User user = null;
-        //if(media != null){
-            Voice voice = media.getVoice();
-            voice.setCount(0);
-            voice.setIsAnomaly(0);
-            //user = media.getUser();
-        //}
+        model.addAttribute("voice",media.getVoice().getStatus());
+        model.addAttribute("video",media.getVideo().getStatus());
         return media.getUser();
     }
 

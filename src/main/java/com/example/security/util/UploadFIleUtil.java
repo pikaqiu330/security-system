@@ -27,7 +27,7 @@ public class UploadFIleUtil {
     @Autowired
     private MediaService mediaService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(UploadFIleUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(UploadFIleUtil.class);
 
     /**
      * 上传音频文件
@@ -43,20 +43,20 @@ public class UploadFIleUtil {
             File dest = new File(filePath);
             // 检测是否存在目录
             if (!dest.getParentFile().exists()) {
-                LOG.info("新建文件夹...");
+                logger.info("新建文件夹...");
                 File wavFile = new File(wavPath);
                 wavFile.mkdirs();
                 dest.getParentFile().mkdirs();// 新建文件夹
             }
-            LOG.info(dest.getName() + "文件开始写入...");
+            logger.info(dest.getName() + "文件开始写入...");
             file.transferTo(dest);// 文件写入
-            LOG.info("upload successful");
+            logger.info("upload successful");
             return true;
         } catch (IOException e) {
-            LOG.error("上传文件失败！");
+            logger.error("上传文件失败！");
             e.printStackTrace();
         }
-        LOG.info("upload failure");
+        logger.info("upload failure");
         return false;
     }
 
