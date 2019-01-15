@@ -9,8 +9,6 @@ import com.example.security.service.MediaService;
 import com.example.security.util.LocalUtil;
 import com.example.security.util.UploadFIleUtil;
 import com.example.security.util.VoiceLinkJNI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
