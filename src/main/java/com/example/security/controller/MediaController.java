@@ -92,7 +92,6 @@ public class MediaController {
     public void CallBackRequest(HttpServletRequest request){
         Video video = mediaService.ReadAsChars(request);
         mediaService.videoDispose(video);
-
     }
 
     @RequestMapping(value = "switchLocalRemote")

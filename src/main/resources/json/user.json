@@ -3,16 +3,16 @@
     {
       "name" : "clientA",
       "ip" : "192.168.13.9",
-      "videoLocalIp" : "192.168.13.3:5001",
-      "videoRemoteIp" : "192.168.13.3:5000",
+      "videoLocalIp" : "192.168.86.64",
+      "videoRemoteIp" : "192.168.13.3:5001",
       "wavPath" : "E:/voice/clientA_wav/",
       "rawPath" : "E:/voice/clientA_raw/"
     },
     {
       "name" : "clientB",
       "ip" : "192.168.13.5",
-      "videoLocalIp" : "192.168.13.3:5000",
-      "videoRemoteIp" : "192.168.13.3:5001",
+      "videoLocalIp" : "192.168.13.3:5001",
+      "videoRemoteIp" : "192.168.86.64",
       "wavPath" : "E:/voice/clientB_wav/",
       "rawPath" : "E:/voice/clientB_raw/"
     }

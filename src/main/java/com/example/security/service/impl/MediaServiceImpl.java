@@ -106,15 +106,19 @@ public class MediaServiceImpl implements MediaService {
                                  ) {
                                 if(!is.equals(in)){
                                     Media mediaRemote = LoadUserBean.map.get(is);
-                                    if(mediaRemote.getNvms().equals(0)){
-                                        //若远端与本端正在同时检测这个摄像头则同时推送消息
-                                        socketServer.sendInfo("Warning");
-                                        LOG.info("remote and local Warning...");
+                                    if(!media.getVideo().getStatus().equalsIgnoreCase(video.getStatus())) {
+                                        if (mediaRemote.getNvms().equals(0)) {
+                                            //若远端与本端正在同时检测这个摄像头则同时推送消息
+                                            socketServer.sendInfo("Warning");
+                                            LOG.info("remote and local Warning...");
+                                        } else {
+                                            socketServer.sendMessage("Warning");
+                                            LOG.info("local Warning...");
+                                        }
+                                        media.getVideo().setStatus("Warning");
                                     }else {
-                                        socketServer.sendMessage("Warning");
-                                        LOG.info("local Warning...");
+                                        media.getVideo().setIsAnomaly(0);
                                     }
-                                    media.getVideo().setStatus("Warning");
                                     media.getVideo().setTimestamp(System.currentTimeMillis());
                                 }
                             }
@@ -125,15 +129,19 @@ public class MediaServiceImpl implements MediaService {
                             ) {
                                 if (!in.equals(is)) {
                                     Media isMedia = LoadUserBean.map.get(is);
-                                    if(isMedia.getNvms().equals(1)){
-                                        //若远端与本端正在同时检测这个摄像头则同时推送消息
-                                        socketServer.sendInfo("Warning");
-                                        LOG.info("remote and local Warning...");
+                                    if(!isMedia.getVideo().getStatus().equalsIgnoreCase(video.getStatus())) {
+                                        if (isMedia.getNvms().equals(1)) {
+                                            //若远端与本端正在同时检测这个摄像头则同时推送消息
+                                            socketServer.sendInfo("Warning");
+                                            LOG.info("remote and local Warning...");
+                                        } else {
+                                            socketServer.sendMessage("Warning");
+                                            LOG.info("remote Warning...");
+                                        }
+                                        isMedia.getVideo().setStatus("Warning");
                                     }else {
-                                        socketServer.sendMessage("Warning");
-                                        LOG.info("remote Warning...");
+                                        isMedia.getVideo().setIsAnomaly(0);
                                     }
-                                    isMedia.getVideo().setStatus("Warning");
                                     isMedia.getVideo().setTimestamp(System.currentTimeMillis());
                                 }
                             }
@@ -154,7 +162,7 @@ public class MediaServiceImpl implements MediaService {
                             media.getVideo().setStatus(video.getStatus());
                         }else {
                             media.getVideo().setIsAnomaly(1);
-                            media.getVideo().setStatus(video.getStatus());
+                            //media.getVideo().setStatus(video.getStatus());
                         }
                     }
                 }else {
@@ -166,7 +174,7 @@ public class MediaServiceImpl implements MediaService {
                                 long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
                                 if(outTime < 30){
                                     isMedia.getVideo().setIsAnomaly(1);
-                                    isMedia.getVideo().setStatus(video.getStatus());
+                                    //isMedia.getVideo().setStatus(video.getStatus());
                                 }else {
                                     socketServer.sendMessage(video.getStatus());
                                     isMedia.getVideo().setStatus(video.getStatus());

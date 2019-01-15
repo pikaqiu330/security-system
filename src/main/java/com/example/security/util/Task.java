@@ -23,7 +23,6 @@ public class Task {
     private void deleteVoiceFile(){
         LOG.info("开始清理服务器音频文件...");
         for (String in : LoadUserBean.map.keySet()) {
-             //map.keySet()返回的是所有key的值
             Media media = LoadUserBean.map.get(in);//得到每个key多对用value的值
             uploadFIleUtil.deleteDirectory(media.getVoice().getRawPath());
             uploadFIleUtil.deleteDirectory(media.getVoice().getWavPath());
@@ -39,7 +38,6 @@ public class Task {
             WebSocketServerImpl socketServer = WebSocketServerImpl.map.get(media.getUser().getIp());
             if(socketServer != null) {
                 if (media.getNvms().equals(1)) {
-                    //taskProcessing(media,socketServer);
                     if(media.getVideo().getIsAnomaly().equals(1)){
                         long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
                         if (outTime > 30) {
@@ -48,15 +46,13 @@ public class Task {
                                 if(!remoteIp.equals(in)){
                                     Media mediaRemote = LoadUserBean.map.get(remoteIp);
                                     if(mediaRemote.getNvms().equals(0)){
-                                        //if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
-                                            socketServer.sendInfo("Normal");
-                                            LOG.info("remote and local Normal...");
-                                        //}
+                                        socketServer.sendInfo("Normal");
+                                        LOG.info("remote and local Normal...");
                                     }else {
                                         socketServer.sendMessage("Normal");
                                         LOG.info("local Normal...");
                                     }
-                                    //media.getVideo().setStatus("Normal");
+                                    media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);
                                 }
                             }
@@ -68,21 +64,18 @@ public class Task {
                     ) {
                         if (!is.equals(in)) {
                             Media isMedia = LoadUserBean.map.get(is);
-                            //taskProcessing(isMedia,socketServer);
                             if(isMedia.getVideo().getIsAnomaly().equals(1)){
                                 long outTime = (System.currentTimeMillis() - isMedia.getVideo().getTimestamp()) / 1000;
                                 if (outTime > 30) {
                                     Media mediaRemote = LoadUserBean.map.get(is);
                                     if(mediaRemote.getNvms().equals(1)){
-                                        //if(mediaRemote.getVideo().getIsAnomaly().equals(1)){
-                                            socketServer.sendInfo("Normal");
-                                            LOG.info("remote and local Normal...");
-                                        //}
+                                        socketServer.sendInfo("Normal");
+                                        LOG.info("remote and local Normal...");
                                     }else {
                                         socketServer.sendMessage("Normal");
                                         LOG.info("remote Normal...");
                                     }
-                                    //media.getVideo().setStatus("Normal");
+                                    media.getVideo().setStatus("Normal");
                                     media.getVideo().setIsAnomaly(0);
                                 }
                             }
@@ -92,18 +85,4 @@ public class Task {
             }
         }
     }
-
-    /*private void taskProcessing(Media media,WebSocketServerImpl socketServer){
-        //if(media.getVideo().getStatus().equalsIgnoreCase("Warning")){
-            if(media.getVideo().getIsAnomaly().equals(1)){
-                long outTime = (System.currentTimeMillis() - media.getVideo().getTimestamp()) / 1000;
-                if (outTime > 30) {
-                    socketServer.sendMessage("Normal");
-                    media.getVideo().setStatus("Normal");
-                    media.getVideo().setIsAnomaly(0);
-                }
-            }
-        //}
-    }*/
-
 }
